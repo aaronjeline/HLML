@@ -1,0 +1,10 @@
+(html
+ (head
+   (title "Aaron's" Page))
+ (body
+  (h1 This is a my page)
+  (b Here is my shopping list:)
+  (script 
+	(let [(elems (list "apples" "oranges" "pears" "grapes" "milk"))]
+		(cons 'ul (map (lambda (e) `(li ,e)) elems))))
+  (p This is text This is more text Here's a link: (a (attr (href "google.com")) "Click here"))))

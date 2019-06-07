@@ -1,0 +1,70 @@
+#+TITLE: Hyper Lisp Markup Language
+
+* Introduction
+  ~HLML~ is a expirmental new markup language/scripting environment
+
+* Lisp Concepts
+  First, some basic concepts of writing code in a lisp:
+  1. Atoms:
+     Things like ~3~ ~"hello"~ evaluate to themselves, and are basic atoms.
+  2. Symbols:
+     Things written ~f~ are the "symbol" ~f~. Evaluating a symbol causes it to be looked up
+     in the enviornment and replaced with their definiton. 
+  3. Lists:
+     Writing ~(f 2 3)~ is the list containing ~1~, ~2~, & ~3~. Evaluating this list causes ~f~
+     to be interpreted as a function, and ~2~, ~3~, to be interpreted as arguments. 
+
+     ~(f 2 3)~ is equivalent to writing ~f(2,3)~ in most languages.
+
+     Example: ~(+ 1 2)~ evaluates to ~3~.
+     
+     This means you *cannot* write the list consisting of 1,2,3 as ~(1 2 3)~, as when evaluated,
+     this will treat ~1~ as a function, which it's not, and will thus cause a type error.
+
+     If you want to produce a list instead of calling a function, use the ~list~ function:
+     ~(list 1 2 3)~ evaluates to ~(1 2 3)~.
+     
+  4. Quoting:
+     This is were things get /lispy/. There are is a builtin form called ~quote~ that prevents
+     its arguments from being evaluated. So evaluating ~(quote x)~ gets ~x~, regardless of what ~x~
+     is defined as, or if it's defined at all. This can be used to make lists: ~(quote (1 2 3))~ is 
+     equivalent to ~(list 1 2 3)~, as quote stops the evaluation, so ~1~ does *not* get treated as 
+     a fucntion. However ~(quote (1 (+ 1 1) 3))~ is not equivalent to ~(list 1 (+ 1 1) 3)~. 
+     ~quote~ stops all evaluation, so the former evalutes to ~(1 (+ 1 1) 3)~,  whereas normal functions
+     evaluate their aguments, producing: ~(1 2 3)~.
+
+     In addition to ~quote~, there are the forms ~quasiquote~ and ~unquote~, shortcutted to ~`~ and ~,~
+     respectivly. These allow you to conditionally resume evaluation. For example: ~`(1 ,(+ 2 3) 3)~ 
+     evaluates to ~(1 5 3)~.
+     
+  5. Useful builtins:
+     - ~define~ -> Defines a variable: ~(define x 3) (+ x 2)~ evaluates to ~5~
+     - ~define~ -> Define a fucntion ~(define (add1 x) (+ 1 x)) (add1 3)~ evaluates to ~4~
+     - ~list~ -> produce a list
+     - ~map~ -> maps a function over a list: ~(map add1 (list 1 2 3))~ evaluates to ~(2 3 4)~
+
+* The Markup Language
+  ~HLML~ looks fairly similar to ~HTML~ but using lisp syntax. So to use the ~b~ tag, you'd write:
+  ~(b Here is my text in bold)~. Tag attributes are specified by following a tag with the following
+  list: ~(attr (name value) ...)~, for example: ~(a (attr (href "google.com")) Link to google)~.
+  
+  Scripting support is enabled by the ~script~ tag. Scripts can create ~hlml~ objects by just making 
+  symbols with ~quote~. 
+
+  An example ~hlml~ file is provided in ~test.hlml~
+
+* Prototype Implementation
+  The file ~hlml.rkt~ is a prototype implementation of the language.
+  
+  To use it, run ~racket hlml.rkt <file>~, which will evaluate the ~script~ calls and produce the
+  final ~hlml~ represesntation.
+
+  Run ~racket hlml.rkt -o <file>~ to compile ~hlml~ to ~html~, to view in a browser.
+
+  
+* Todo
+  Features remaining to implemented:
+  Mutation, ~scripts~ not allowed to mutate the page yet. Big feature.
+  Attribute syntax: Does this syntax work nicely, or is it annoying?
+  (Maybe it should be ~((a (href "example.com")) click)~)
+  CSS?
